@@ -1,0 +1,6 @@
+com/lightbend/futures/CachedCustomerRepository.class
+com/lightbend/futures/ObjectStore.class
+com/lightbend/futures/FileBasedObjectStore.class
+com/lightbend/futures/Customer.class
+com/lightbend/futures/CustomerService.class
+com/lightbend/futures/CustomerRepository.class

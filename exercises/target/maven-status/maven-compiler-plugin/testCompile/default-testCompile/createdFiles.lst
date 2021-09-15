@@ -1,0 +1,6 @@
+com/lightbend/futures/FileBasedObjectStoreTest.class
+com/lightbend/futures/CachedCustomerRepositoryTest.class
+com/lightbend/futures/CustomerTest.class
+com/lightbend/futures/CustomerServiceTest.class
+com/lightbend/futures/TestHelpers.class
+com/lightbend/futures/CustomerServiceFunctionalTest.class
