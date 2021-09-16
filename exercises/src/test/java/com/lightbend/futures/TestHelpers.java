@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public class TestHelpers {
 
-    private static Random rnd = new Random(System.currentTimeMillis());
+    private static final Random rnd = new Random(System.currentTimeMillis());
 
     static Customer generateCustomer() {
         return new Customer(

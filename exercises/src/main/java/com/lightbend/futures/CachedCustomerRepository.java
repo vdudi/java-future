@@ -1,10 +1,13 @@
 package com.lightbend.futures;
 
 
+import java.io.Closeable;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -13,11 +16,12 @@ interface CustomerRepository {
     CompletableFuture<Optional<Customer>> getCustomer(UUID customerId);
 }
 
-class CachedCustomerRepository implements CustomerRepository {
+class CachedCustomerRepository implements CustomerRepository, Closeable {
 
-    private ObjectStore objectStore;
-    private ConcurrentHashMap<UUID, Customer> cache = new ConcurrentHashMap<>();
-    private ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final ObjectStore objectStore;
+    private final ConcurrentHashMap<UUID, Customer> cache = new ConcurrentHashMap<>();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final ExecutorService executor = Executors.newFixedThreadPool(10);
 
     CachedCustomerRepository(ObjectStore objectStore) {
         this.objectStore = objectStore;
@@ -32,7 +36,7 @@ class CachedCustomerRepository implements CustomerRepository {
             cache.put(customer.getId(), customer);
 
             lock.writeLock().unlock();
-       });
+       }, executor);
     }
 
     @Override
@@ -45,7 +49,8 @@ class CachedCustomerRepository implements CustomerRepository {
         if(cache.containsKey(customerId)) {
             result = CompletableFuture.completedFuture(Optional.of(cache.get(customerId)));
         } else {
-            result = CompletableFuture.supplyAsync(() -> objectStore.read(customerId).map(obj -> (Customer) obj));
+            result = CompletableFuture.
+                    supplyAsync(() -> objectStore.read(customerId).map(obj -> (Customer) obj), executor);
         }
 
         lock.readLock().unlock();
@@ -53,5 +58,10 @@ class CachedCustomerRepository implements CustomerRepository {
 
 
         return result;
+    }
+
+    @Override
+    public void close() {
+        executor.shutdown();
     }
 }

@@ -5,7 +5,7 @@ import java.util.UUID;
 
 class CustomerService {
 
-    private CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
 
     CustomerService(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;

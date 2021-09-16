@@ -19,11 +19,11 @@ interface ObjectStore {
  */
 class FileBasedObjectStore implements ObjectStore {
 
-    private File storeFolder;
+    private final File storeFolder;
 
     // This would be more efficient if written with a lock per file.
     // However for simplicity we are going with a single lock instead.
-    private ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     /**
      * Construct an ObjectStore Store
